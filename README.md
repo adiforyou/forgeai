@@ -477,7 +477,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 **Aditya Singh**
 - Email: codeadi100@gmail.com
 - GitHub: [@adiforyou](https://github.com/adiforyou)
-- LinkedIn: [Aditya Singh](https://linkedin.com/in/yourprofile)
+- LinkedIn: [Aditya Singh](https://www.linkedin.com/in/adityasingh-swe/)
 
 ---
 
