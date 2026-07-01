@@ -5,6 +5,7 @@
   "description": "Forge AI - Enterprise AI-powered code review platform",
   "author": "Aditya Singh <codeadi100@gmail.com>",
   "license": "MIT",
+  "packageManager": "npm@10.2.4",
   "workspaces": [
     "apps/*",
     "packages/*"
