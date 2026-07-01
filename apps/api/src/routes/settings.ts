@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '@prr/database';
+import { prisma } from 'database';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { encrypt, decrypt } from '../utils/crypto';
 import { AppError } from '../middleware/error-handler';

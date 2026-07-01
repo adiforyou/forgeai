@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '@prr/database';
+import { prisma } from 'database';
 import Redis from 'ioredis';
 
 const router = Router();

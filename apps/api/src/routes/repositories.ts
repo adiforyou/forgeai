@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '@prr/database';
-import { GitHubProvider, GitLabProvider, BitbucketProvider } from '@prr/git-providers';
+import { prisma } from 'database';
+import { GitHubProvider, GitLabProvider, BitbucketProvider } from 'git-providers';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/error-handler';
 import { decrypt } from '../utils/crypto';

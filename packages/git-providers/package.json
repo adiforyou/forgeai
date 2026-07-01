@@ -1,5 +1,5 @@
 {
-  "name": "@prr/git-providers",
+  "name": ""git-providers",
   "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -7,7 +7,7 @@
   "dependencies": {
     "@gitbeaker/rest": "^43.8.0",
     "@octokit/rest": "^20.1.1",
-    "@prr/types": "*",
+    ""types": "*",
     "axios": "^1.18.1"
   },
   "devDependencies": {

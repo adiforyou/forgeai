@@ -1,7 +1,7 @@
-import { LLMOrchestrator } from '@prr/llm';
-import { GitHubProvider } from '@prr/git-providers';
-import type { PRInfo, PRDiff, FileChange, ReviewResult, ReviewFinding, ReviewStrategy } from '@prr/types';
-import { prisma } from '@prr/database';
+import { LLMOrchestrator } from 'llm';
+import { GitHubProvider } from 'git-providers';
+import type { PRInfo, PRDiff, FileChange, ReviewResult, ReviewFinding, ReviewStrategy } from 'types';
+import { prisma } from 'database';
 import { decrypt } from '../utils/crypto';
 import { logger } from '../utils/logger';
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { GitHubProvider } from '@prr/git-providers';
-import { prisma } from '@prr/database';
+import { GitHubProvider } from 'git-providers';
+import { prisma } from 'database';
 import { logger } from '../../utils/logger';
 import { reviewQueue } from '../../jobs/queue';
 

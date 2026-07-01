@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '@prr/database';
+import { prisma } from 'database';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/error-handler';
 import { reviewQueue } from '../jobs/queue';
