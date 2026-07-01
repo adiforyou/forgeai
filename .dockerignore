@@ -1,0 +1,58 @@
+# Node modules
+node_modules
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Development files
+.git
+.gitignore
+.env*.local
+.env.development
+*.md
+README.md
+
+# Next.js
+.next
+out
+**/.next
+**/out
+
+# Build outputs
+dist
+build
+**/ dist
+**/build
+
+# Testing
+coverage
+.nyc_output
+**/__tests__
+**/__mocks__
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Database
+*.sqlite
+*.db
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore

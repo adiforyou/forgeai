@@ -1,0 +1,340 @@
+// Prisma Schema for PR Reviewer Pro
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Management
+// ============================================
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String?  // Hashed password
+  name         String?
+  avatar       String?
+
+  // Email Verification
+  emailVerified       Boolean   @default(false)
+  verificationToken   String?   @unique
+  verificationExpires DateTime?
+
+  // Password Reset
+  resetToken          String?   @unique
+  resetTokenExpires   DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  settings     UserSettings?
+  repositories Repository[]
+  reviews      Review[]
+  analytics    Analytics[]
+
+  @@index([email])
+  @@index([verificationToken])
+  @@index([resetToken])
+  @@map("users")
+}
+
+model UserSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // LLM API Keys (encrypted in application layer)
+  openaiApiKey     String?
+  anthropicApiKey  String?
+  geminiApiKey     String?
+  customLlmConfig  Json?   // For custom LLM endpoints
+
+  // Git Provider Tokens (encrypted in application layer)
+  githubToken     String?
+  gitlabToken     String?
+  bitbucketToken  String?
+  bitbucketUser   String?
+
+  // Review Preferences
+  defaultModel       String  @default("gemini-2.0-flash")
+  fallbackModels     String[] @default([])
+  autoReview         Boolean @default(true)
+  reviewOnDraft      Boolean @default(false)
+  maxCostPerReview   Float   @default(1.0)
+  enableStreaming    Boolean @default(true)
+
+  // Notification Preferences
+  emailNotifications  Boolean @default(true)
+  slackWebhook        String?
+  notifyOnComplete    Boolean @default(true)
+  notifyOnFailure     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// ============================================
+// Repository Management
+// ============================================
+
+model Repository {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  platform     Platform
+  repoFullName String   // e.g., "owner/repo"
+  repoUrl      String
+  repoId       String?  // External repo ID from Git provider
+
+  // Webhook Configuration
+  webhookId     String?
+  webhookSecret String?
+  webhookActive Boolean @default(false)
+
+  // Repository Settings
+  isActive          Boolean  @default(true)
+  reviewRules       Json?    // Custom review rules
+  excludePatterns   String[] @default([]) // Files to exclude
+  requireApproval   Boolean  @default(false)
+  blockOnFailure    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  pullRequests PullRequest[]
+
+  @@unique([platform, repoFullName])
+  @@index([userId])
+  @@index([platform])
+  @@map("repositories")
+}
+
+enum Platform {
+  GITHUB
+  GITLAB
+  BITBUCKET
+}
+
+// ============================================
+// Pull Request Tracking
+// ============================================
+
+model PullRequest {
+  id           String @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  // PR Details
+  prNumber     Int
+  prTitle      String
+  prUrl        String
+  prAuthor     String
+  prAuthorId   String?
+  prBranch     String
+  targetBranch String   @default("main")
+
+  // PR Metadata
+  diffSize      Int?     // Lines changed
+  filesChanged  Int?     // Number of files
+  additions     Int?
+  deletions     Int?
+  isDraft       Boolean  @default(false)
+  isMerged      Boolean  @default(false)
+  mergedAt      DateTime?
+
+  // Status
+  status    PRStatus @default(PENDING)
+  lastSyncAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  reviews Review[]
+
+  @@unique([repositoryId, prNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@map("pull_requests")
+}
+
+enum PRStatus {
+  PENDING
+  QUEUED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ============================================
+// Review Results
+// ============================================
+
+model Review {
+  id            String @id @default(cuid())
+  pullRequestId String?
+  pullRequest   PullRequest? @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Review Configuration
+  model          String  // e.g., "gpt-4o", "claude-opus-4"
+  strategy       String  @default("single-pass") // single-pass, multi-pass, security-audit
+  systemPrompt   String  @db.Text
+  temperature    Float   @default(0.3)
+
+  // Status & Timing
+  status      ReviewStatus @default(PENDING)
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  duration    Int?         // milliseconds
+
+  // Results
+  summary     String?      @db.Text
+  findings    Json?        // Array of issues found
+  severity    Severity?    // Overall severity
+
+  // Metrics
+  costUsd        Float?
+  tokensInput    Int?
+  tokensOutput   Int?
+  tokensTotal    Int?
+
+  // Posted Comments
+  commentIds  String[]  // IDs from GitHub/GitLab/Bitbucket
+  commentUrls String[]  // URLs to comments
+
+  // Error Handling
+  errorMessage String?  @db.Text
+  retryCount   Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pullRequestId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  QUEUED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+// ============================================
+// Analytics & Metrics
+// ============================================
+
+model Analytics {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date   DateTime @db.Date
+
+  // Review Metrics
+  reviewsCount     Int   @default(0)
+  reviewsCompleted Int   @default(0)
+  reviewsFailed    Int   @default(0)
+
+  // Cost Metrics
+  totalCost     Float @default(0)
+  totalTokens   Int   @default(0)
+  avgCostPerPR  Float @default(0)
+
+  // Performance Metrics
+  avgReviewTime Float @default(0) // seconds
+  minReviewTime Float @default(0)
+  maxReviewTime Float @default(0)
+
+  // Issue Metrics
+  issuesFound   Int @default(0)
+  criticalCount Int @default(0)
+  highCount     Int @default(0)
+  mediumCount   Int @default(0)
+  lowCount      Int @default(0)
+
+  // Model Usage (JSON)
+  modelUsage Json @default("{}")
+  // Example: { "gpt-4o": 10, "gemini-2.0-flash": 25, "claude-opus-4": 5 }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("analytics")
+}
+
+// ============================================
+// Job Queue (for background processing)
+// ============================================
+
+model Job {
+  id String @id @default(cuid())
+
+  // Job Type
+  type     JobType
+  priority Int     @default(5) // 1-10, higher = more urgent
+
+  // Job Data
+  payload Json
+
+  // Status
+  status       JobStatus @default(PENDING)
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
+  errorMessage String?   @db.Text
+
+  // Timing
+  scheduledFor DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+  timeout      Int       @default(300000) // 5 minutes in ms
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, priority])
+  @@index([type, status])
+  @@index([scheduledFor])
+  @@map("jobs")
+}
+
+enum JobType {
+  REVIEW_PR
+  WEBHOOK_PROCESS
+  ANALYTICS_COMPUTE
+  CLEANUP
+}
+
+enum JobStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  FAILED
+  CANCELLED
+}

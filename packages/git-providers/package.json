@@ -1,0 +1,17 @@
+{
+  "name": "@prr/git-providers",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@gitbeaker/rest": "^43.8.0",
+    "@octokit/rest": "^20.1.1",
+    "@prr/types": "*",
+    "axios": "^1.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.2"
+  }
+}

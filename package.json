@@ -1,0 +1,42 @@
+{
+  "name": "forge-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Forge AI - Enterprise AI-powered code review platform",
+  "author": "Aditya Singh <codeadi100@gmail.com>",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:api": "turbo run dev --filter=api",
+    "dev:web": "turbo run dev --filter=web",
+    "build": "turbo run build",
+    "build:api": "turbo run build --filter=api",
+    "build:web": "turbo run build --filter=web",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test --coverage",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "turbo run typecheck",
+    "db:migrate": "npm run db:migrate --workspace=packages/database",
+    "db:migrate:create": "npm run db:migrate:create --workspace=packages/database",
+    "db:reset": "npm run db:reset --workspace=packages/database",
+    "db:studio": "npm run db:studio --workspace=packages/database",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.7",
+    "typescript": "^5.5.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  }
+}

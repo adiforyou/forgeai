@@ -1,0 +1,84 @@
+# Python (old project files)
+.secrets.toml
+.venv/
+__pycache__/
+*.pyc
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Turbo
+.turbo/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Prisma
+prisma/migrations/**/migration.sql
+
+# Docker
+*.log
+
+# Build outputs
+*.tsbuildinfo
+
+# Temporary files
+tmp/
+temp/
+
+# Secrets (IMPORTANT)
+*.pem
+*.key
+*.cert
+
+# Exclude all .md files except README.md
+*.md
+!README.md
+
+# Exclude Python files from old project
+*.py
+config.py
+llm.py
+main.py
+prompts.py
+requirements.txt
+.secrets.toml
