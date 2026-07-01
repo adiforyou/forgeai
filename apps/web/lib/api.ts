@@ -88,5 +88,7 @@ export const analyticsApi = {
     api.get('/analytics/dashboard', { params: { period } }),
   costs: (startDate?: string, endDate?: string) =>
     api.get('/analytics/costs', { params: { startDate, endDate } }),
+  costBreakdown: (period?: string) =>
+    api.get('/analytics/costs', { params: { period } }),
   trends: (period?: string) => api.get('/analytics/trends', { params: { period } }),
 };
